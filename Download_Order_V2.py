@@ -1,10 +1,3 @@
-
-
-
-
-
-
-
 from time import sleep
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
@@ -13,31 +6,22 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import WebDriverException
 import json
 import os
 import pandas as pd
 import boto3
 import shutil
 
-
-
-
 ################################################################
 # S3 Related
 ################################################################
-
-
-
-
 
 def save_to_s3(file_path, bucket_name, s3_save_path):
     print('Starting Saving to S3 bucket ' + file_path)
     client = boto3.client('s3')
     client.upload_file(file_path, bucket_name, s3_save_path)
     print('Saving to S3 Bucket Ended successfully ' + file_path)
-
-
-
 
 def uploading_to_s3(bucket_name, local_path, partitioned_prefix, img_name):
     print('Starting uploading to s3 ' + img_name)
@@ -63,9 +47,6 @@ def uploading_to_s3(bucket_name, local_path, partitioned_prefix, img_name):
     else:
         print('No image has been successfully uploaded')
     return len(images)
-
-
-
 
 ########### Browser Set Up ##################
 
@@ -115,10 +96,6 @@ def open_txt_file(path):
     f = open(path)
     data = json.load(f)
     return data
-
-
-
-
 
 def check_order_status(order_url,order_no,driver):
 
@@ -225,7 +202,6 @@ def download_files(download_path,order_no):
 
 if __name__ == "__main__":
 
-
     csv_file_path = 'order_info.csv'
     bucket_name = "rfims-prototype"
     credentials_file = 'login_parameters.json'
@@ -240,14 +216,30 @@ if __name__ == "__main__":
     username = login_data['username']
     password = login_data['password']
     pending_order_no = None
-    print("Downloading Products From Pending Orders ....")
+    print("Attempting Downloading Products From Pending Orders ....")
     df = pd.read_csv(csv_file_path)
     filtrd = df[df['status'] == 'pending']
+
     if not filtrd.empty:
         for order in filtrd['order_no']:
             pending_order_no = order
-            driver = driver_setup(download_path,pending_order_no)
-            login(login_url, username, password, driver)
+            driver = driver_setup(download_path, pending_order_no)
+
+            # Attempt to log in with retries
+            login_attempts = 1
+            max_login_attempts = 3
+            while login_attempts <= max_login_attempts:
+                print(f'Login Attempt: {login_attempts} of 3')
+                try:
+                    login(login_url, username, password, driver)
+                    break  # Exit loop if login is successful
+                except WebDriverException as e:
+                    print(f"Error accessing {login_url}: {e}")
+                    login_attempts += 1
+                    if login_attempts == max_login_attempts:
+                        print(f"Max login attempts reached for order {pending_order_no}. Skipping to next order.")
+                        continue  # Skip to the next order
+
             status_flag = check_order_status(order_url, pending_order_no,driver)
             if status_flag == "ready" and not check_order_subfolder(driver):
 
@@ -263,7 +255,7 @@ if __name__ == "__main__":
                 df.loc[df.order_no == order, 'status'] = "expired"
             df.to_csv(csv_file_path, index=False)
     else:
-        print("No Panding order to Download")
+        print("No Pending order to Download")
     # df.to_csv(csv_file_path,index=False)
 
 
