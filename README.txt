@@ -15,14 +15,14 @@ this folder consists of:
     a func. to detect place on Map <map_point>
     a func. to select Order Criteria <order_criteria>
     a func. to make the order <place_order>
-    a func. to get search crateria from the config file <pars_mapdata_from_cnfg_file>
+    a func. to get search criteria from the config file <pars_mapdata_from_cnfg_file>
 
 
 
 
 
 * functions in  "Download_Order_V2.py" "script:
-    a func. to download images of the ready oreder <download_files>
+    a func. to download images of the ready order <download_files>
     a func. to upload downloaded images to S3 <uploading_to_s3>
     a func. to LOGIN <login>
     a func. check a given order number is ready for download <check_order_status>
