@@ -9,7 +9,7 @@ this folder consists of:
 
 
 * functions in "Place_Order_V2.py" "script:
-    a func. to save the order infro to csv file for later use <order_info_tocsv>
+    a func. to save the order info to csv file for later use <order_info_tocsv>
     a func. to Get the order number placed <get_ticket_order_no>
     a func. to LOGIN <login>
     a func. to detect place on Map <map_point>
