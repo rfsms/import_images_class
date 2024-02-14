@@ -9,7 +9,7 @@ this folder consists of:
 
 
 * functions in "Place_Order_V2.py" "script:
-    a func. to save the order infro to csv file for later use <order_info_tocsv>
+    a func. to save the order info to csv file for later use <order_info_tocsv>
     a func. to Get the order number placed <get_ticket_order_no>
     a func. to LOGIN <login>
     a func. to detect place on Map <map_point>
@@ -22,7 +22,7 @@ this folder consists of:
 
 
 * functions in  "Download_Order_V2.py" "script:
-    a func. to download images of the ready oreder <download_files>
+    a func. to download images of the ready order <download_files>
     a func. to upload downloaded images to S3 <uploading_to_s3>
     a func. to LOGIN <login>
     a func. check a given order number is ready for download <check_order_status>
